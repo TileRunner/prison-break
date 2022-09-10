@@ -1,13 +1,13 @@
 {
   "files": {
-    "main.css": "/prison-break/static/css/main.964fdded.css",
-    "main.js": "/prison-break/static/js/main.240e7ebc.js",
+    "main.css": "/prison-break/static/css/main.d439548e.css",
+    "main.js": "/prison-break/static/js/main.b4bf4028.js",
     "index.html": "/prison-break/index.html",
-    "main.964fdded.css.map": "/prison-break/static/css/main.964fdded.css.map",
-    "main.240e7ebc.js.map": "/prison-break/static/js/main.240e7ebc.js.map"
+    "main.d439548e.css.map": "/prison-break/static/css/main.d439548e.css.map",
+    "main.b4bf4028.js.map": "/prison-break/static/js/main.b4bf4028.js.map"
   },
   "entrypoints": [
-    "static/css/main.964fdded.css",
-    "static/js/main.240e7ebc.js"
+    "static/css/main.d439548e.css",
+    "static/js/main.b4bf4028.js"
   ]
 }
