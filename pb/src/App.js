@@ -1,9 +1,12 @@
 import './App.css';
+import './prisonbreak.css';
 import {useState} from 'react';
 import Table from 'react-bootstrap/Table';
 import Login from './login';
 import ShowGameList from './showGameList';
 import ShowChat from './showChat';
+import Game from './game';
+import * as c from './constants';
 
 function App() {
   const [loggedIn, setLoggedIn] = useState(false);
@@ -11,6 +14,7 @@ function App() {
   const [inLobby, setInLobby] = useState(true);
   const [gamenumber, setGamenumber] = useState(-1);
   const [gamechatnumber, setGamechatnumber] = useState(-1);
+  const [participant, setParticipant] = useState(c.PARTY_TYPE_UNDETERMINED);
   return (
     <div>
       <header  className="trBackground">
@@ -30,7 +34,7 @@ function App() {
               </thead>
               <tbody>
                   <tr>
-                      <td><ShowGameList username={username} setInLobby={setInLobby} setGamenumber={setGamenumber} setGamechatnumber={setGamechatnumber}/></td>
+                      <td><ShowGameList username={username} setInLobby={setInLobby} setGamenumber={setGamenumber} setGamechatnumber={setGamechatnumber} setParticipant={setParticipant}/></td>
                       <td><ShowChat chattype='PRISONBREAK' username={username}/></td>
                   </tr>
               </tbody>
@@ -46,7 +50,13 @@ function App() {
               </thead>
               <tbody>
                   <tr>
-                      <td className='trWarning'>Under construction, game number {gamenumber}</td>
+                      <td>
+                        <Game
+                         participant={participant}
+                         gameid={gamenumber}
+                         nickname={username}
+                        />
+                      </td>
                       <td><ShowChat chattype='GAMECHAT' chatnumber={gamechatnumber} username={username}/></td>
                   </tr>
               </tbody>

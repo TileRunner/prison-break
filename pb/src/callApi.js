@@ -52,15 +52,29 @@ export async function callGetChat(chattype, chatnumber) {
     return jdata.value;
 }
 /**
+ * Determine which words are invalid
+ * @param {string[]} words A word array
+ * @returns {string[]} The words that are not in the slur-expunged ENABLE2K lexicon
+ * @async
+ */
+ export async function determineInvalidWords(words) {
+    let url = `${baseurl}/ENABLE2K/getinvalidwords?words=${words}&qorqu=true&blanks=true`; // Server handles case insensitive logic
+    const response = await fetch(url);
+    const jdata = await response.json();
+    return jdata.value;
+}
+/**
  * Send a player move and get back updated game data
  * @param {int} number The game number
- * @param {string} name The player name
- * @param {string} type The type of move (VALID, PHONY, PASS, TIMEOUT)
- * @param {string} word The word
+ * @param {bool} isPass Is it a pass?
+ * @param {bool} isExchange Is it an exchange?
+ * @param {string} mainword The main word played
+ * @param {string} extrawords A comma separated list of extra words formed by the play
+ * @param {string} coords The coords
  * @returns The updated game data or an error
  */
-export async function callMakeMove(number, name, type, word) {
-    let url =`${baseurl}/pb/makemove?number=${number}&name=${name}&type=${type}&word=${word}`;
+export async function callMakeMove(number, isPass, isExchange, mainword, extrawords, coords, syncCheck) {
+    let url =`${baseurl}/pb/makemove?number=${number}&isPass=${isPass}&isExchange=${isExchange}&mainWord=${mainword}&extraWords=${extrawords}&coords=${coords}&syncCheck=${syncCheck}`;
     try {
         const response = await fetch(url);
         const jdata = await response.json();

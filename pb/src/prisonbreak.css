@@ -1,0 +1,550 @@
+:root {
+    --commonBorderColour: grey;/* pb */
+    --commonTextBackgroundColour: black; /* pb */
+    --commonTextColour: whitesmoke; /* pb */
+    --commonHeaderFontFamily: Arial, Helvetica, sans-serif; /* pb */
+    --commonFontFamily: Verdana, Geneva, Tahoma, sans-serif; /* pb */
+    --squareSide: 40px;
+    --cellBlockSide: 40px;
+    --cellBlockSelectedHeight: 42px;
+    --selectedColor: hsl(207, 90%, 56%);
+    --lobbyFontSize: 20px;
+    --tileBackgroundColour: orangered;
+    --prisonersTileColour: whitesmoke;
+    --guardsTileColour: black;
+}
+.commonFontFamily { /* pb */
+    font-family: var(--commonFontFamily);
+}
+.topBarHeight {
+    height: 60px;
+}
+.examineFooterHeight {
+    height: 90px;
+}
+.topBarCorner {
+    width: 20%;
+    height: 50%;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+.fullWidth {
+    width: 100%;
+}
+.formalinfo {
+    font-family: var(--commonFontFamily);
+    letter-spacing: 1px;
+}
+.prisonbreak {
+    background-image: url("../public/Wall.jpg");
+    background-size: cover;
+}
+.pbGameid {
+    background-color: var(--commonTextBackgroundColour);
+    color: var(--commonTextColour);
+    border-color: var(--commonBorderColour);
+    border-width: 0 0 3px 3px;
+    border-style: solid;
+}
+.pbtitle {
+    background-color: grey;
+    font-size: 2.8em;
+    text-align: center;
+    font-family: Arial, Helvetica, sans-serif;
+    /* font-style: italic; */
+    color:black;
+}
+.pbhomelink {
+    background-color: var(--commonTextBackgroundColour);
+    color: var(--commonTextColour);
+    text-align: right;
+    border-color: var(--commonBorderColour);
+    border-width: 0 3px 3px 0;
+    border-style: solid;
+}
+.pbPlayerOuterSection {
+    padding-top: 3px;
+}
+.pbPlayerInnerSection {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    font-size: x-large;
+}
+.pbPlayerTitle {
+    font-family: var(--commonFontFamily);
+    background-image: url('../public/playertitle.png');
+    background-repeat: repeat;
+    border-radius: 35px;
+    background-color: whitesmoke;
+    color: whitesmoke;
+    letter-spacing: 2px;
+    font-weight: lighter;
+    text-align: center;
+    padding-left: 6px;
+    padding-right: 5px;
+    border-style: inset;
+    border-width: 2px;
+}
+.pbPlayerTitle.P {
+    font-size: inherit;   
+}
+.pbPlayerTitle.G {
+    font-size: inherit;    
+}
+.pbSquareOuter { /* Thin black border around each board square */
+    border: solid;
+    border-width: thin;
+    border-color: black;
+    border-style: solid;
+    padding: 0px; /* So nothing appears between the squares - keep them flush */
+}
+.pbSquareInner { /* Common board square properties */
+    height: var(--squareSide);
+    width: var(--squareSide);
+    border-style: none;
+}
+.pbSquareInner:focus { /* No outline when in focus */
+    outline: none;
+}
+.pbSquareInner.style1 { /* Alternating square style 1 */
+    background-color: black;
+    color: black;
+}
+.pbSquareInner.style2 { /* Alternating square style 2 */
+    background-color: darkgrey;
+    color: darkgrey;
+}
+.pbSquareInner.CenterSquare { /* Centre square */
+    padding-top: 3px;
+    border-style: none;
+    background-color: var(--commonTextBackgroundColour);
+    color: cornsilk;
+    font-size: x-large;
+}
+.pbSquareInner.EscapeHatch { /* Escape hatch square */
+    padding-top: 3px;
+    border-style: solid;
+    border-color: var(--commonBorderColour);
+    border-width: thin;
+    background-color: orangered;
+    color: whitesmoke;
+    text-align: center;
+}
+.pbSquareInner.PlayerTile { /* Player tile image on the square */
+    background-image: url('../public/tile.png');
+    background-size: cover;
+    background-color: var(--tileBackgroundColour);
+    position: relative;
+}
+.pbSquareTileText { /* The tile played on the board */
+    position: absolute;   
+    bottom: 3px;
+    left: 12px; 
+    font-weight: bolder;
+    text-align: center;
+    text-shadow: 2px 2px  grey;
+    font-family: monospace;
+    font-size: xx-large;
+}
+.pbSquareTileText.P { /* Prisoners tile color */
+    color: var(--prisonersTileColour);
+}
+.pbSquareTileText.G { /* Guards tile color */
+    color: var(--guardsTileColour);
+}
+.u::after {
+    content: "u";
+    font-size: small;
+}
+.pbSquareInner.RightArrow { /* Right arrow word direction indicator */
+    padding: 0%;
+    border-style: none;
+    background-color: grey;
+    color: cyan;
+    font-weight: bolder;
+    text-align: center;
+}
+.pbSquareInner.DownArrow { /* Down arrow word direction indicator */
+    padding: 0%;
+    border-style: none;
+    background-color: grey;
+    color: cyan;
+    font-weight: bolder;
+    text-align: center;
+}
+.pbRow {
+    padding: 0%;
+}
+.pbBoardPlusUnderboard {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+.pbBoard {
+    border-style: solid;
+    border-width: 0px;
+    border-color: var(--commonBorderColour);
+}
+.pbBoardColumnHeaderRow {
+    font-family: var(--commonHeaderFontFamily);
+    text-align: center;
+    line-height: var(--cellBlockSide);
+}
+.pbBoardColumnHeader {
+    background-image: url('../public/BarbedWireRotated.png');
+    background-size: cover;
+    background-repeat: repeat;
+    background-color: black;
+    color: white;
+    text-align: center;
+}
+.pbBoardRowHeader {
+    font-family: var(--commonHeaderFontFamily);
+    background-image: url('../public/BarbedWire.png');
+    background-size: cover;
+    background-repeat: repeat;
+    color: white;
+    text-align: center;
+}
+.pbBoardHeaderTopLeft {
+    min-width: var(--cellBlockSide);
+    min-height: var(--cellBlockSide);
+    background-image: url('../public/BarbedWireRotated.png');
+    background-size: cover;
+}
+.pbBoardHeaderTopRight {
+    min-width: var(--cellBlockSide);
+    min-height: var(--cellBlockSide);
+    background-image: url('../public/BarbedWire.png');
+    background-size: cover;
+}
+.pbBoardHeaderBottomLeft {
+    min-width: var(--cellBlockSide);
+    min-height: var(--cellBlockSide);
+    background-image: url('../public/BarbedWire.png');
+    background-size: cover;
+}
+.pbBoardHeaderBottomRight {
+    min-width: var(--cellBlockSide);
+    min-height: var(--cellBlockSide);
+    background-image: url('../public/BarbedWireRotated.png');
+    background-size: cover;
+}
+.pbUnderboard {
+    margin-top: 10px;
+    border-style: solid;
+    border-color: var(--commonBorderColour);
+    background-color: var(--commonTextBackgroundColour);
+    color: var(--commonTextColour);
+    padding-left: 10px;
+    padding-right: 10px;
+}
+.pbTileAndMovesOuter {
+    align-items: left;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    max-width: 250px;
+}
+.pbTilepool {
+    text-align: left;
+    border-width: 3px;
+    border-style: solid solid none solid;
+    border-color: var(--commonBorderColour);
+    background-color: var(--commonTextBackgroundColour);
+    color: var(--commonTextColour);
+    font-family: monospace;
+    font-size: xx-small;
+    word-wrap: break-word;
+}
+.pbTilepoolDivider {
+    width: 2px;
+    vertical-align: top;
+    font-size: larger;
+}
+.pbTilepoolDivider::after {
+    content: ".";
+}
+.pbTilepoolTitle {
+    font-size: 150%;
+    letter-spacing: 3px;
+    border-bottom-style: dotted;
+    border-color: var(--commonBorderColour);
+}
+.pbTilepoolTile {
+    font-size: small;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+.pbMoves {
+    text-align: left;
+    border-width: 3px;
+    border-style: solid;
+    border-color: var(--commonBorderColour);
+    background-color: var(--commonTextBackgroundColour);
+    color: var(--commonTextColour);
+    font-family: monospace;
+    font-size: xx-small;
+}
+.pbMovesTitle {
+    font-size: 150%;
+    letter-spacing: 3px;
+    border-bottom-style: dotted;
+    border-color: var(--commonBorderColour);
+}
+.pbMovesScrollable {
+    max-height: 550px;
+    /* max-width: 250px; */
+    overflow-x: scroll;
+    overflow-y: scroll;
+    scroll-behavior: auto;
+}
+.pbMove {
+    font-size: small;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+.pbMove:hover {
+    background-color: magenta;
+    cursor: pointer;
+}
+.pbMove.by {
+    color: yellow;
+}
+.pbMove.SWAP {
+    color: cyan;
+}
+.pbMove.SWAP::after {
+    content: "Swap tiles";
+}
+.pbMove.PASS {
+    color: red;
+}
+.pbMove.PASS::after {
+    content: "Pass turn";
+}
+.pbMove.PLAY {
+    color: var(--commonTextColour);
+}
+.pbTilerack {
+    padding-top: 2px;
+    padding-bottom: 5px;
+    display: flex;
+    flex-direction: row;
+}
+.pbTilerackArrow {
+    /*
+        I got this idea online.
+        It is a box with a border, but the box has no height or width leaving just borders.
+        When the 4 borders meet (no box) it is like 4 triangles (imagine X ).
+        You make 3 borders transparent, leaving only the triangle you want to display.
+    */
+    margin-top: 13px; /* push the arrow down to the middle */
+    margin-right: 5px; /* put some space between the arrow and tilerack */
+    width: 0; 
+    height: 0; 
+    border-top: 7px solid transparent; /* less than 15px here and next line for a more slender arrow */
+    border-bottom: 7px solid transparent;   
+    border-left: 15px solid rgb(44, 240, 37);
+}
+.pbTilerackArrowInFooter {
+    margin-top: 2px;
+    margin-left: 5px;
+    margin-right: 5px;
+    width: 0;
+    height: 0;
+    border-top: 7px solid transparent; /* less than 15px here and next line for a more slender arrow */
+    border-bottom: 7px solid transparent;   
+    border-left: 15px solid rgb(44, 240, 37);
+}
+.pbTileOnRack {
+    background-image: url('../public/tile.png');
+    background-size: cover;
+    background-color: var(--tileBackgroundColour);
+    width: var(--squareSide);
+    height: var(--squareSide);
+    position: relative;
+}
+.pbTileOnRack.Unselected {
+    border: none;
+}
+.pbTileOnRack.Selected {
+    border-style: inset;
+    border-width: thin;
+    border-color: white;
+    transform: rotate(10deg);
+    margin: 4px;
+}
+.pbTileOnRackText {
+    position: absolute;   
+    bottom: 2px;
+    left: 11px; 
+    font-weight: bolder;
+    text-align: center;
+    text-shadow: 2px 2px  grey;
+    font-family: monospace;
+    font-size: xx-large;
+}
+.pbTileOnRack.P {
+    color: var(--prisonersTileColour);
+}
+.pbTileOnRack.G {
+    color: var(--guardsTileColour);
+}
+.pbRescuesMade {
+    background-color: var(--commonTextBackgroundColour);
+    color:var(--commonTextColour);
+    border-color: var(--commonBorderColour);
+    border-width: 3px;
+    border-style: solid;
+    padding-left: 3px;
+    font-family: var(--commonFontFamily);
+    font-size: 30px;
+}
+.pbActionButtonDiv {
+    margin-left: 7px;
+}
+.pbActionButton {
+    padding: 2px 2px 2px 2px;
+    margin-left: 5px;
+    border-radius: 35px;
+    border-width: 0px;
+    border-color: var(--commonBorderColour);
+    border-style: solid;
+    background-color: var(--commonTextBackgroundColour);
+    color: var(--commonTextColour);
+    font-style: bolder;
+    font-family: var(--commonFontFamily);
+    width: 200px;
+    word-spacing: 3px;
+}
+.pbActionButtonText {
+    margin-left: 5px;
+    margin-right: 15px;
+}
+.pbActionButtonSevere {
+    background-color: red;
+    border: none;
+}
+.pbActionButtonSevereText {
+    color: black;
+}
+.pbActionButtonSevereText2 {
+    color: whitesmoke;
+    font-size: small;
+    display: table; /* This makes it go on the next line */
+    margin: auto; /* This is the only way I could centre it! */
+}
+.pbLobbyRackSizePrompt {
+    margin-left: 15px;
+    margin-right: 20px;
+    font-family: var(--commonHeaderFontFamily);
+    font-weight: bold;
+}
+.pbLobbyRackSizePrompt:before {
+    content: "Cell Block";
+}
+.pbLobbyRackSizePrompt::after {
+    content: ":";
+    padding-left: 2px;
+}
+.pbLobbyRackSize {
+    background-image: url("../public/prisonbars-square.png");
+    vertical-align: middle;
+    background-size: var(--cellBlockSide);
+    background-color: grey;
+    color: whitesmoke;
+    width: var(--cellBlockSide);
+    height: var(--cellBlockSide);
+    margin-right:20px;
+    align-content: center;
+}
+.pbLobbyRackSizeSelected {
+    vertical-align: middle;
+    background-color: var(--selectedColor);
+    color: white;
+    width: var(--cellBlockSide);
+    height: var(--cellBlockSelectedHeight);
+    margin-right:20px;
+    border-width: 1px;
+    border-color: lightgrey;
+    border-style: solid;
+}
+.pbLobbyRackSizeSelected:focus {
+    outline: none;
+}
+.pbLobbyCellBlockInfo {
+    font-family: var(--commonFontFamily);
+    font-style: italic;
+    padding-left: 5px;
+}
+.pbChat {
+    align-items: left;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    border-width: 3px;
+    border-style: none solid none solid;
+    border-color: var(--commonBorderColour);
+    max-height: 600px;
+    overflow-y: scroll;
+}
+.pbChatTable {
+    border-color: var(--commonBorderColour);
+}
+.pbChatFrom {
+    background-color: black;
+    color: white;
+    padding-right: 5px;
+    vertical-align: top;
+}
+.pbChatFrom::before {
+    content: ">";
+    color: yellow;
+}
+.pbChatFrom::after {
+    content: ":";
+    color: yellow;
+    font-size: larger;
+    padding-left: 1px;
+}
+.pbChatMsg {
+    padding-left: 5px;
+    font-style: italic;
+    color:whitesmoke;
+    background-color: black;
+    padding-top:2px;
+}
+.pbChatInput {
+    font-style: italic;
+    color:whitesmoke;
+    background-color: var(--commonBorderColour);
+    width: 100%;
+}
+.pbChatInputEmpty {
+    background-color: whitesmoke;
+    width: 100%;
+    max-block-size: 30px;
+    cursor: text;
+}
+.pbSnatDiv {
+    align-items: left;
+    display: display-box;
+    flex-direction: column;
+    justify-content: left;
+    border-width: 5px;
+    border-style: none none solid solid;
+    border-color: black;
+    max-height: 300px;
+    max-width: 450px;
+    overflow-y: scroll;
+}
+.pbSnat {
+    background-color: black;
+    color: white;
+    font-family: monospace;
+    margin: auto;
+}
