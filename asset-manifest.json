@@ -1,16 +1,16 @@
 {
   "files": {
     "main.css": "/prison-break/static/css/main.6d4dbfd0.css",
-    "main.js": "/prison-break/static/js/main.2d3df928.js",
+    "main.js": "/prison-break/static/js/main.6bec9bc3.js",
     "static/media/Wall.jpg": "/prison-break/static/media/Wall.47add20fa95f0bdaa7f3.jpg",
     "static/media/BarbedWireRotated.png": "/prison-break/static/media/BarbedWireRotated.66473fcd48baf80d8c93.png",
     "static/media/BarbedWire.png": "/prison-break/static/media/BarbedWire.8e7c2a66b6d601dc1dbb.png",
     "index.html": "/prison-break/index.html",
     "main.6d4dbfd0.css.map": "/prison-break/static/css/main.6d4dbfd0.css.map",
-    "main.2d3df928.js.map": "/prison-break/static/js/main.2d3df928.js.map"
+    "main.6bec9bc3.js.map": "/prison-break/static/js/main.6bec9bc3.js.map"
   },
   "entrypoints": [
     "static/css/main.6d4dbfd0.css",
-    "static/js/main.2d3df928.js"
+    "static/js/main.6bec9bc3.js"
   ]
 }
