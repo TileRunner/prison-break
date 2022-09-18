@@ -15,6 +15,7 @@ function App() {
   const [gamenumber, setGamenumber] = useState(-1);
   const [gamechatnumber, setGamechatnumber] = useState(-1);
   const [participant, setParticipant] = useState(c.PARTY_TYPE_UNDETERMINED);
+  console.log(`Render App ${loggedIn}|${username}|${inLobby}|${gamenumber}|${gamechatnumber}|${participant}`);
   return (
     <div>
       <header  className="trBackground">
@@ -55,6 +56,7 @@ function App() {
                          participant={participant}
                          gameid={gamenumber}
                          nickname={username}
+                         setInLobby={setInLobby}
                         />
                       </td>
                       <td><ShowChat chattype='GAMECHAT' chatnumber={gamechatnumber} username={username}/></td>

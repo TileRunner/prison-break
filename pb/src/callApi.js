@@ -157,3 +157,21 @@ export async function callCreateGame(name, rackSize) {
         return {error: 'Problem with ' + url};
     }
 }
+/**
+ * Delete game
+ * @param {int} number The game number
+ * @returns Updated game list or an error, json format
+ * @async
+ */
+ export async function callDeleteGame(number) {
+    let url =`${baseurl}/pb/deletegame?number=${number}`;
+    try {
+        const response = await fetch(url);
+        const jdata = await response.json();
+        jdata.value.error = false;
+        return jdata.value;
+    } catch (error) {
+        console.log(error);
+        return {error: 'Problem with ' + url};
+    }
+}

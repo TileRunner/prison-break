@@ -3,7 +3,7 @@ import Button from "react-bootstrap/Button";
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Table from 'react-bootstrap/Table';
-import { callGetGameList, callCreateGame, callJoinGame } from "./callApi";
+import { callGetGameList, callCreateGame, callJoinGame, callDeleteGame } from "./callApi";
 import { formatTime } from "./formatTime";
 import GetOptions from "./getOptions";
 import * as c from './constants';
@@ -58,10 +58,19 @@ const ShowGameList = ({username, setInLobby, setGamenumber, setGamechatnumber, s
             setParticipant(jdata.guardsName === username ? c.PARTY_TYPE_GUARDS : c.PARTY_TYPE_PRISONERS);
         }
     }
+    async function deleteGame(deletegamenumber) {
+        let jdata = await callDeleteGame(deletegamenumber,username);
+        if (jdata.error) {
+            setErrorMessage(jdata.error);
+        } else {
+            setGamelist(jdata.gamelist);
+            setErrorMessage('');
+        }
+    }
     return (<div>
         {errorMessage && <p className="trWarning">Error: {errorMessage}</p>}
         <p className="trParagraph">
-            Number of games: {gamelist.length}
+            Number of games: {gamelist ? gamelist.length : 'Loading...'}
         </p>
         <Table striped bordered hover size="sm" variant="dark" responsive="sm">
             <thead>
@@ -83,12 +92,21 @@ const ShowGameList = ({username, setInLobby, setGamenumber, setGamechatnumber, s
                     <td>{formatTime(game.createTime)}</td>
                     <td>{game.finished ? 'Finished' : game.started ? 'In Progress' : 'Not Started'}</td>
                     <td>
-                        {!game.guardsName || username === game.prisonersName || username === game.guardsName ?
-                        <Button key={`joinbutton${game.number}`}
+                        <Row>
+                        {
+                        (!game.guardsName || username === game.prisonersName || username === game.guardsName) &&
+                        <Col><Button key={`joinbutton${game.number}`}
                         onClick={() => {joinGame(game.number);}}>
                             Join
-                        </Button>
-                        : <span>None</span>}
+                        </Button></Col>}
+                        { (game.finished && (username === game.prisonersName || username === game.guardsName)) &&
+                        <Col><Button key={`deletebutton${game.number}`}
+                        variant='danger'
+                        onClick={() => {deleteGame(game.number);}}>
+                            Delete
+                        </Button></Col>
+                        }
+                        </Row>
                     </td>
                 </tr>
             ))}

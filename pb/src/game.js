@@ -13,6 +13,7 @@ import { callGetGame, callMakeMove, determineInvalidWords } from "./callApi";
 const Game = ({ participant // P=Prisoners, G=Guards
     , gameid
     , nickname='' // Give it a default for Build
+    , setInLobby // Support button to go back to lobby
     }) => {
     const [snats, setSnats] = useState(['Hello. This space is for debugging messages.']);
     const [racksize, setRacksize] = useState(4);
@@ -32,6 +33,7 @@ const Game = ({ participant // P=Prisoners, G=Guards
     const [oppname, setOppname] = useState('');
     const prevRescues = usePrevious(rescues);
     const prevWhoseturn = usePrevious(whoseturn);
+    console.log(`Render game ${participant}|${gameid}|${nickname}|${racksize}|${middle}|${edge}|${selection}|${whoseturn}|${rescues}|${oppname}`);
 
     function addSnat(snat) {
       let newSnats = [...snats];
@@ -577,6 +579,11 @@ const Game = ({ participant // P=Prisoners, G=Guards
           <div className="w3-display-topleft w3-black topBarCorner commonFontFamily">
             Game id: {gameid}
           </div>
+          <div className="w3-display-topright w3-black topBarCorner commonFontFamily">
+            <button
+            onClick={() => {setInLobby(true);}}
+            >Click to return to lobby</button>
+          </div>
           <div className="w3-display-bottomleft w3-orange topBarCorner commonFontFamily">
             Prisoners: {
               participant === c.PARTY_TYPE_PRISONERS ? nickname
@@ -660,6 +667,7 @@ const Game = ({ participant // P=Prisoners, G=Guards
     participant: PropTypes.string.isRequired,
     gameid: PropTypes.number.isRequired,
     nickname: PropTypes.string.isRequired,
+    setInLobby: PropTypes.any
   };
   
 
