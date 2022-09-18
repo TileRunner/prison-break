@@ -31,6 +31,8 @@ const Game = ({ participant // P=Prisoners, G=Guards
     const [jokeindex, setJokeindex] = useState(0);
     const [oppname, setOppname] = useState('');
     const prevRescues = usePrevious(rescues);
+    const prevWhoseturn = usePrevious(whoseturn);
+
     function addSnat(snat) {
       let newSnats = [...snats];
       let current_datetime = new Date();
@@ -74,15 +76,24 @@ const Game = ({ participant // P=Prisoners, G=Guards
       scrollToBottom("ScrollableSnats");
     },[snats])
     useEffect(() => {
-      if (rescues > prevRescues) {
-          var myaudio = document.createElement('audio');
-          myaudio.src = participant === c.PARTY_TYPE_GUARDS ? "https://tilerunner.github.io/OneGotAway.m4a" : "https://tilerunner.github.io/yippee.m4a";
-          myaudio.play();
+      // Play a sound when required
+      let sound;
+      if (whoseturn !== prevWhoseturn && whoseturn === c.WHOSE_TURN_GAMEOVER) {
+        sound = "ByeBye";
+      } else if (rescues > prevRescues) {
+        sound = participant === c.PARTY_TYPE_GUARDS ? "OneGotAway" : "yippee";
+      } else if (whoseturn !== prevWhoseturn && whoseturn === participant) {
+        sound = 'YourTurn';
       }
-    }, [rescues, participant, prevRescues]); // Play a sound when a rescue is made
-    useEffect(() => {
-      setJokeindex(current => current === c.JOKE_ARRAY.length - 1 ? 0 : current + 1);
-    }, [whoseturn]); // want up to date value of whoseturn to decide whether to ask for an update
+      if (sound) {
+        var myaudio = document.createElement('audio');
+        myaudio.src = `https://tilerunner.github.io/${sound}.m4a`;
+        myaudio.play();
+      }
+      if (whoseturn !== prevWhoseturn) {
+        setJokeindex(current => current === c.JOKE_ARRAY.length - 1 ? 0 : current + 1);
+      }
+    }, [participant, rescues, prevRescues, whoseturn, prevWhoseturn]);
 
     useEffect(() => {
       const interval = setInterval(() => {
