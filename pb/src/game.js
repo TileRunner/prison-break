@@ -33,6 +33,7 @@ const Game = ({ participant // P=Prisoners, G=Guards
     const [oppname, setOppname] = useState('');
     const prevRescues = usePrevious(rescues);
     const prevWhoseturn = usePrevious(whoseturn);
+    const prevOppname = usePrevious(oppname);
     console.log(`Render game ${participant}|${gameid}|${nickname}|${racksize}|${middle}|${edge}|${selection}|${whoseturn}|${rescues}|${oppname}`);
 
     function addSnat(snat) {
@@ -84,7 +85,9 @@ const Game = ({ participant // P=Prisoners, G=Guards
         sound = "ByeBye";
       } else if (rescues > prevRescues) {
         sound = participant === c.PARTY_TYPE_GUARDS ? "OneGotAway" : "yippee";
-      } else if (whoseturn !== prevWhoseturn && whoseturn === participant) {
+      } else if (whoseturn !== prevWhoseturn && whoseturn === participant && oppname) {
+        sound = 'YourTurn';
+      } else if (!prevOppname && oppname && whoseturn === participant) {
         sound = 'YourTurn';
       }
       if (sound) {
@@ -95,12 +98,12 @@ const Game = ({ participant // P=Prisoners, G=Guards
       if (whoseturn !== prevWhoseturn) {
         setJokeindex(current => current === c.JOKE_ARRAY.length - 1 ? 0 : current + 1);
       }
-    }, [participant, rescues, prevRescues, whoseturn, prevWhoseturn]);
+    }, [participant, rescues, prevRescues, whoseturn, prevWhoseturn, oppname, prevOppname]);
 
     useEffect(() => {
       const interval = setInterval(() => {
         if ((participant !== whoseturn && whoseturn !== c.WHOSE_TURN_GAMEOVER) || (!oppname)) {
-          requestSyncData(); // Send a request for game data when waiting for their move or waiting for guards to join
+          requestGameData(); // Send a request for game data when waiting for their move or waiting for guards to join
         }
         }, c.PING_INTERVAL); // this many milliseconds between above code block executions
       return () => clearInterval(interval);
@@ -234,6 +237,9 @@ const Game = ({ participant // P=Prisoners, G=Guards
       setMoves(apireturn.moves);
       setRescues(apireturn.rescues);
       setSquareArray(apireturn.squares);
+      if (!oppname && participant === c.PARTY_TYPE_PRISONERS) {
+        setOppname(apireturn.guardsName);
+      }
       return true;
     }
 
@@ -458,7 +464,7 @@ const Game = ({ participant // P=Prisoners, G=Guards
       applyApireturn(apireturn);
     }
 
-    async function requestSyncData() {
+    async function requestGameData() {
       let apireturn = await callGetGame(gameid);
       applyApireturn(apireturn);
     }
@@ -574,15 +580,15 @@ const Game = ({ participant // P=Prisoners, G=Guards
       <div className="prisonbreak">
         <div className="w3-display-container w3-teal topBarHeight">
           <div className="w3-display-middle">
-            <h1 className="myHeadingFont">Prison Break</h1>
+            <h2>Prisoners land on <i className="material-icons pbSquareInner EscapeHatch">{c.PARTY_ICON_PRISONERS}</i> to escape</h2>
           </div>
           <div className="w3-display-topleft w3-black topBarCorner commonFontFamily">
             Game id: {gameid}
           </div>
-          <div className="w3-display-topright w3-black topBarCorner commonFontFamily">
-            <button
+          <div className="w3-display-topright w3-black w3-border topBarCorner commonFontFamily">
+            <button className="w3-black"
             onClick={() => {setInLobby(true);}}
-            >Click to return to lobby</button>
+            >Click here to return to lobby</button>
           </div>
           <div className="w3-display-bottomleft w3-orange topBarCorner commonFontFamily">
             Prisoners: {
@@ -605,7 +611,7 @@ const Game = ({ participant // P=Prisoners, G=Guards
                 tiles={tiles}
                 othertiles={participant === c.PARTY_TYPE_PRISONERS ? gtiles : ptiles}
                 />
-              <ShowMoves moves={moves} onmoveclick={(mi) => handleMoveClick(mi)}/>
+              {moves.length > 0 && <ShowMoves moves={moves} onmoveclick={(mi) => handleMoveClick(mi)}/>}
           </div>
           <div className="col pbPlayerOuterSection">
             <PlayerSection

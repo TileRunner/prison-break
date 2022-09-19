@@ -270,9 +270,11 @@
 }
 .pbTilepoolTitle {
     font-size: 150%;
-    letter-spacing: 3px;
-    border-bottom-style: dotted;
+    /* letter-spacing: 3px; */
+    border-bottom-style: none;
     border-color: var(--commonBorderColour);
+    background-color: white;
+    color: black;
 }
 .pbTilepoolTile {
     font-size: small;
@@ -291,9 +293,11 @@
 }
 .pbMovesTitle {
     font-size: 150%;
-    letter-spacing: 3px;
-    border-bottom-style: dotted;
+    /* letter-spacing: 3px; */
+    border-bottom-style: none;
     border-color: var(--commonBorderColour);
+    background-color: white;
+    color: black;
 }
 .pbMovesScrollable {
     max-height: 550px;
@@ -537,9 +541,9 @@
     justify-content: left;
     border-width: 5px;
     border-style: none none solid solid;
-    border-color: black;
+    border-color: red;
     max-height: 300px;
-    max-width: 450px;
+    width: auto;
     overflow-y: scroll;
 }
 .pbSnat {

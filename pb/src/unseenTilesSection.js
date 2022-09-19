@@ -15,7 +15,7 @@ const ShowUnseenTiles = ({tiles, othertiles}) => { // tiles = tiles in bag, othe
     }
     return (
       <div className="pbTilepool">
-        <div className="pbTilepoolTitle">TILES</div>
+        <div className="pbTilepoolTitle">Unseen tiles ({tiles.length} in the bag):</div>
         {unseenTiles.map((t, ti) => (
           <span key={`tile${ti}`}>
             {ti > 0 && t !== unseenTiles[ti - 1] ? (

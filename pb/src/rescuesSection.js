@@ -4,7 +4,9 @@ import PropTypes from "prop-types";
 const ShowRescues = ({rescues}) => {
     return (
       <div className="pbRescuesMade">
-        Rescues made: {rescues}
+        {rescues === 0 && 'No escapes'}
+        {rescues === 1 && '1 escape'}
+        {rescues > 1 && `${rescues} escapes`}
       </div>
     );
 };

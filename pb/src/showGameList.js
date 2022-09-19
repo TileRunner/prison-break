@@ -72,7 +72,7 @@ const ShowGameList = ({username, setInLobby, setGamenumber, setGamechatnumber, s
         <p className="trParagraph">
             Number of games: {gamelist ? gamelist.length : 'Loading...'}
         </p>
-        <Table striped bordered hover size="sm" variant="dark" responsive="sm">
+        {gamelist && gamelist.length > 0 && <Table striped bordered hover size="sm" variant="dark" responsive="sm">
             <thead>
                 <tr>
                     <th>Game #</th>
@@ -84,7 +84,7 @@ const ShowGameList = ({username, setInLobby, setGamenumber, setGamechatnumber, s
                 </tr>
             </thead>
             <tbody>
-            {gamelist.map((game,index) => (
+            {gamelist.map((game) => (
                 <tr key={`gamelist${game.number}`}>
                     <td>{game.number}</td>
                     <td>{game.prisonersName}</td>
@@ -111,7 +111,7 @@ const ShowGameList = ({username, setInLobby, setGamenumber, setGamechatnumber, s
                 </tr>
             ))}
             </tbody>
-        </Table>
+        </Table>}
         {!showOptions && <Row>
             <Col xs='auto'>
                 <Button onClick={() => {setShowOptions(true);}}>

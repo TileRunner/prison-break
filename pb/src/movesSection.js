@@ -5,7 +5,7 @@ import * as c from './constants';
 const ShowMoves = ({moves, onmoveclick}) => { // show moves made
     return (
       <div className="pbMoves">
-        <div className="pbMovesTitle">MOVES</div>
+        <div className="pbMovesTitle">Moves made:</div>
         <div className="pbMovesScrollable" id="ScrollableMoves">
           {moves && moves.map((m, mi) => (
             <div key={`move${mi}`} className="pbMove" onClick={() => onmoveclick(mi)}>
