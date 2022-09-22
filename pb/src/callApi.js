@@ -58,7 +58,7 @@ export async function callGetChat(chattype, chatnumber) {
  * @async
  */
  export async function determineInvalidWords(words) {
-    let url = `${baseurl}/ENABLE2K/getinvalidwords?words=${words}&qorqu=true&blanks=true`; // Server handles case insensitive logic
+    let url = `${baseurl}/ENABLE2K/getinvalidwords?words=${words}`; // Server handles case insensitive logic
     const response = await fetch(url);
     const jdata = await response.json();
     return jdata.value;
@@ -68,7 +68,7 @@ export async function callGetChat(chattype, chatnumber) {
  * @param {int} number The game number
  * @param {bool} isPass Is it a pass?
  * @param {bool} isExchange Is it an exchange?
- * @param {string} mainword The main word played
+ * @param {string} mainword The main word played, blanks as lower case letter otherwise upper case
  * @param {string} extrawords A comma separated list of extra words formed by the play
  * @param {string} coords The coords
  * @returns The updated game data or an error

@@ -328,3 +328,6 @@
   max-block-size: 30px;
   cursor: text;
 }
+.clickable {
+  cursor: pointer;
+}

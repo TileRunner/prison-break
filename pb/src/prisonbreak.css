@@ -154,10 +154,6 @@
 .pbSquareTileText.G { /* Guards tile color */
     color: var(--guardsTileColour);
 }
-.u::after {
-    content: "u";
-    font-size: small;
-}
 .pbSquareInner.RightArrow { /* Right arrow word direction indicator */
     padding: 0%;
     border-style: none;

@@ -24,7 +24,7 @@ const Square = ({usedBy, type, letter, ri, ci, rcd, onClick}) => {
         </button>
       :
         <button className={tdclass} onClick={onClick}>
-          <div className={`pbSquareTileText ${usedBy + (letter === "Q" ? " u" : "")}`}>{tdvalue}</div>
+          <div className={`pbSquareTileText ${usedBy}`}>{tdvalue}</div>
         </button>
     );
 };

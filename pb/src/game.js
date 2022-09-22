@@ -10,6 +10,11 @@ import { scrollToBottom } from "./scrollToBottom";
 import { usePrevious } from "./usePrevious";
 import { callGetGame, callMakeMove, determineInvalidWords } from "./callApi";
 
+// eslint-disable-next-line
+const letterRegex = /^[A-Za-z]$/;
+// eslint-disable-next-line
+const lowerCaseLetterRegex = /^[a-z]$/;
+
 const Game = ({ participant // P=Prisoners, G=Guards
     , gameid
     , nickname='' // Give it a default for Build
@@ -115,73 +120,14 @@ const Game = ({ participant // P=Prisoners, G=Guards
       setCurrentcoords([]);
     }
   
-    // Calling setSelection (from handleKeyDown) then handleBoardSquareClick does not let it recognize selection with the new value
-    // So I pass newSelection when I want to also set it, otherwise I pass -1 to instruct it to use current value of selection
-    // Also passing newRcd
-    const handleBoardSquareClick = (ri, ci, newSelection, newRcd) => {
-      let newSquareArray = JSON.parse(JSON.stringify(squareArray)); // Deep copy
-      let newSquareArrayRow = [...newSquareArray[ri]]; // The row of squares they clicked on
-      let newSquareArrayCell = newSquareArrayRow[ci]; // The square in the row they clicked on
-      let newPtiles = ptiles ? [...ptiles] : [];
-      let newGtiles = gtiles ? [...gtiles] : [];
-      let newCurrentcoords = [...currentcoords];
-      let coord = String(ri) + "-" + String(ci);
-      let cci = currentcoords.indexOf(coord);
-      if (newSelection === -1) {
-        newSelection = selection;
-        newRcd = rcd;
-      }
-      if (newSelection > -1 && newSquareArrayCell.usedBy === c.USED_BY_NONE) { // tile is selected from rack and clicked square is not used yet
-        let selectedTile = whoseturn === c.WHOSE_TURN_PRISONERS ? newPtiles[newSelection] : newGtiles[newSelection];
-        newSquareArrayCell.letter = selectedTile;
-        newSquareArrayCell.usedBy = whoseturn;
-        newSquareArrayRow[ci] = newSquareArrayCell;
-        newSquareArray[ri] = [...newSquareArrayRow];
-        whoseturn === c.WHOSE_TURN_PRISONERS
-          ? newPtiles.splice(newSelection, 1)
-          : newGtiles.splice(newSelection, 1);
-        if (whoseturn === c.WHOSE_TURN_PRISONERS && newSelection === newPtiles.length) { 
-          newSelection = newSelection - 1
-        }
-        if (whoseturn === c.WHOSE_TURN_GUARDS && newSelection === newGtiles.length) { 
-          newSelection = newSelection - 1
-        }
-        setSelection(newSelection);
-        setSquareArray(newSquareArray);
-        setPtiles(newPtiles);
-        setGtiles(newGtiles);
-        setCurrentcoords([...currentcoords, coord]);
-        setRcd(newRcd); // key down handler figured it out
-        return;
-      }
-      if (cci > -1) { // clicked square has a tile on it from the current move in progress, so put it back on the player rack
-        whoseturn === c.WHOSE_TURN_PRISONERS
-          ? newPtiles.push(newSquareArrayCell.letter)
-          : newGtiles.push(newSquareArrayCell.letter);
-        newSquareArrayCell.usedBy = c.USED_BY_NONE;
-        newSquareArrayCell.letter = c.LETTER_NONE;
-        newSquareArrayRow[ci] = newSquareArrayCell;
-        newSquareArray[ri] = [...newSquareArrayRow];
-        setSelection(
-          whoseturn === c.WHOSE_TURN_PRISONERS ? newPtiles.length - 1 : newGtiles.length - 1
-        );
-        newCurrentcoords.splice(cci, 1);
-        setSquareArray(newSquareArray);
-        setPtiles(newPtiles);
-        setGtiles(newGtiles);
-        setCurrentcoords(newCurrentcoords);
-        setRcd([-1,-1,c.DIR_NONE]); // make player click again to set direction
-        return;
-      }
-      // They didn't click a square to place a selected tile there
-      // They didn't click a square to remove an existing tile
-      if (newSquareArrayCell.usedBy === c.USED_BY_NONE) {
-        // There is nothing on the square so they are picking where to place the next tile via keyboard
+    const handleBoardSquareClick = (ri, ci) => {
+      if (squareArray[ri][ci].usedBy === c.USED_BY_NONE) {
+        // There is nothing on the square so they are picking direction
         let newDirection = rcd[0] !== ri || rcd[1] !== ci ? c.DIR_RIGHT : //click new square, start with right
          rcd[2] === c.DIR_RIGHT ? c.DIR_DOWN : //click same square that was right, change to down
          rcd[2] === c.DIR_DOWN ? c.DIR_NONE : //click same square that was down, change to no direction
          c.DIR_RIGHT; // click same square that was no direction, change to right
-        newRcd = [ri,ci,newDirection];
+        let newRcd = [ri,ci,newDirection];
         setRcd(newRcd);
         return;
       }
@@ -469,6 +415,28 @@ const Game = ({ participant // P=Prisoners, G=Guards
       applyApireturn(apireturn);
     }
   
+    const placeTileOnBoard = (ri, ci, rackLetterOffset, newRcd, letter) => {
+      let newSquareArray = JSON.parse(JSON.stringify(squareArray)); // Deep copy
+      let newSquareArrayRow = [...newSquareArray[ri]]; // The row of squares they clicked on
+      let newSquareArrayCell = newSquareArrayRow[ci]; // The square in the row they clicked on
+      let newPtiles = ptiles ? [...ptiles] : [];
+      let newGtiles = gtiles ? [...gtiles] : [];
+      let coord = String(ri) + "-" + String(ci);
+      newSquareArrayCell.letter = letter;
+      newSquareArrayCell.usedBy = whoseturn;
+      newSquareArrayRow[ci] = newSquareArrayCell;
+      newSquareArray[ri] = [...newSquareArrayRow];
+      whoseturn === c.WHOSE_TURN_PRISONERS
+        ? newPtiles.splice(rackLetterOffset, 1)
+        : newGtiles.splice(rackLetterOffset, 1);
+      setSelection(-1);
+      setSquareArray(newSquareArray);
+      setPtiles(newPtiles);
+      setGtiles(newGtiles);
+      setCurrentcoords([...currentcoords, coord]);
+      setRcd(newRcd); // key down handler figured it out
+    };
+  
     const handleKeyDown = (event) => {
       event.preventDefault();
       if (participant !== whoseturn) {return;}
@@ -479,20 +447,21 @@ const Game = ({ participant // P=Prisoners, G=Guards
       if (event.key === "Escape") {
         return;
       }
-      // eslint-disable-next-line
-      let lettertest = /^[A-Za-z\?]$/; // single letter or question mark key pressed
-      if (event.key.match(lettertest)) {
+      if (event.key.match(letterRegex)) {
         let letter = event.key.toUpperCase();
         let rack = whoseturn === c.WHOSE_TURN_PRISONERS ? ptiles : gtiles;
         let newSelection = rack.indexOf(letter);
-        if (newSelection === -1) {
-          newSelection = rack.indexOf("?"); // Use the blank if they have one
+        // Use the blank if exists and letter is not on rack
+        let blankOffset = rack.indexOf("?");
+        if (blankOffset !== -1 && newSelection === -1) {
+          letter = letter.toLowerCase(); // Interpreted as blank when lower case
+          newSelection = blankOffset;
         }
         if (newSelection > -1) { // Pressed letter is on the rack
           let row = rcd[0];
           let col = rcd[1];
           let dir = rcd[2];
-          if (row >-1 && col > -1 && dir !== c.DIR_NONE) { // row, col, dir are set to accept keystroke
+          if (row >-1 && col > -1 && (dir === c.DIR_RIGHT || dir === c.DIR_DOWN)) { // row, col, dir are set to accept keystroke
             // Need to figure out next sqaure to auto-place a tile
             let newRcd = rcd;
             if (dir === c.DIR_RIGHT) { // playing rightwards
@@ -507,9 +476,6 @@ const Game = ({ participant // P=Prisoners, G=Guards
               } else {
                 newRcd = [row, newc, c.DIR_RIGHT];
               }
-              handleBoardSquareClick(row,col,newSelection,newRcd);
-              setSelection(-1); // when they are typing they are not selecting rack tiles by clicking them on the rack
-              return;
             }
             if (dir === c.DIR_DOWN) { // playing downwards
               let newr = -1;
@@ -524,13 +490,12 @@ const Game = ({ participant // P=Prisoners, G=Guards
               } else {
                 newRcd = [newr, col, c.DIR_DOWN];
               }
-              handleBoardSquareClick(row,col,newSelection,newRcd);
-              setSelection(-1); // when they are typing they are not selecting rack tiles by clicking them on the rack
-              return;
             }
-          }
+            placeTileOnBoard(row,col,newSelection,newRcd,letter);
+            return;
         }
-        return;
+        }
+        return; // Ignore because pressed key not on rack
       }
       if (event.key === "Backspace" && currentcoords.length > 0) {
         // Same as clicking on a played-this-move tile in terms of returning the tile to the rack
@@ -545,15 +510,16 @@ const Game = ({ participant // P=Prisoners, G=Guards
         let newSquareArrayRow = newSquareArray[row];
         let newSquareArrayCell = newSquareArrayRow[col];
         let newRcd = [-1,-1,c.DIR_NONE];
-        let newSelection = selection;
         newCurrentcoords.splice(currentcoords.length-1,1);
         let returnedTile = squareArray[row][col].letter;
+        // Lower case letter indicates blank
+        if (returnedTile.match(lowerCaseLetterRegex)) {
+          returnedTile = "?";
+        }
         if (whoseturn === c.WHOSE_TURN_PRISONERS) {
           newPtiles.push(returnedTile);
-          newSelection = newPtiles.length-1;
         } else {
           newGtiles.push(returnedTile);
-          newSelection = newGtiles.length-1;
         }
         newSquareArrayCell.usedBy = c.USED_BY_NONE;
         newSquareArrayCell.letter = c.LETTER_NONE;
@@ -563,19 +529,16 @@ const Game = ({ participant // P=Prisoners, G=Guards
         if (dir !== c.DIR_NONE) {
           // direction was set so keep it
           newRcd = [row,col,dir];
-          if (currentcoords.length === 1) {
-            newSelection = -1; // if they backspace all the letters off leave rack tile unselected
-          }
         }
         setCurrentcoords(newCurrentcoords);
         setGtiles(newGtiles);
         setPtiles(newPtiles);
         setSquareArray(newSquareArray);
         setRcd(newRcd);
-        setSelection(newSelection);
+        setSelection(-1);
       }
     }
-    const handleMoveClick = () => {}
+
     return (
       <div className="prisonbreak">
         <div className="w3-display-container w3-teal topBarHeight">
@@ -585,10 +548,8 @@ const Game = ({ participant // P=Prisoners, G=Guards
           <div className="w3-display-topleft w3-black topBarCorner commonFontFamily">
             Game id: {gameid}
           </div>
-          <div className="w3-display-topright w3-black w3-border topBarCorner commonFontFamily">
-            <button className="w3-black"
-            onClick={() => {setInLobby(true);}}
-            >Click here to return to lobby</button>
+          <div className="w3-display-topright w3-black topBarCorner commonFontFamily clickable" onClick={() => {setInLobby(true);}}>
+            Click here to return to lobby
           </div>
           <div className="w3-display-bottomleft w3-orange topBarCorner commonFontFamily">
             Prisoners: {
@@ -611,7 +572,7 @@ const Game = ({ participant // P=Prisoners, G=Guards
                 tiles={tiles}
                 othertiles={participant === c.PARTY_TYPE_PRISONERS ? gtiles : ptiles}
                 />
-              {moves.length > 0 && <ShowMoves moves={moves} onmoveclick={(mi) => handleMoveClick(mi)}/>}
+              {moves.length > 0 && <ShowMoves moves={moves}/>}
           </div>
           <div className="col pbPlayerOuterSection">
             <PlayerSection
@@ -632,7 +593,7 @@ const Game = ({ participant // P=Prisoners, G=Guards
                 <Board
                   squareArray={squareArray}
                   rcd={rcd}
-                  onClick={(ri, ci) => handleBoardSquareClick(ri, ci, -1,null)}
+                  onClick={(ri, ci) => handleBoardSquareClick(ri, ci)}
                 />
               </div>
             :
