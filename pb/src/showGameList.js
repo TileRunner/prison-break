@@ -6,9 +6,8 @@ import Table from 'react-bootstrap/Table';
 import { callGetGameList, callCreateGame, callJoinGame, callDeleteGame } from "./callApi";
 import { formatTime } from "./formatTime";
 import GetOptions from "./getOptions";
-import * as c from './constants';
 
-const ShowGameList = ({username, setInLobby, setGamenumber, setGamechatnumber, setParticipant}) => {
+const ShowGameList = ({username, setInLobby, setGamenumber, setGamechatnumber}) => {
     const [errorMessage, setErrorMessage] = useState('');
     const [gamelist, setGamelist] = useState([]);
     const hasFetchedData = useRef(false);
@@ -35,7 +34,7 @@ const ShowGameList = ({username, setInLobby, setGamenumber, setGamechatnumber, s
         return () => clearInterval(timer);
     });
     async function createNewGame(options) {
-        let jdata = await callCreateGame(username, options.rackSize);
+        let jdata = await callCreateGame(username, options.rackSize, options.isJumbleMode);
         if (jdata.error) {
             setErrorMessage(jdata.error);
         } else {
@@ -43,7 +42,6 @@ const ShowGameList = ({username, setInLobby, setGamenumber, setGamechatnumber, s
             setGamechatnumber(jdata.chatNumber);
             setInLobby(false);
             setErrorMessage('');
-            setParticipant(c.PARTY_TYPE_PRISONERS)
         }
     }
     async function joinGame(joingamenumber) {
@@ -55,7 +53,6 @@ const ShowGameList = ({username, setInLobby, setGamenumber, setGamechatnumber, s
             setGamechatnumber(jdata.chatNumber);
             setInLobby(false);
             setErrorMessage('');
-            setParticipant(jdata.guardsName === username ? c.PARTY_TYPE_GUARDS : c.PARTY_TYPE_PRISONERS);
         }
     }
     async function deleteGame(deletegamenumber) {

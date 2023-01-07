@@ -2,11 +2,12 @@ import './App.css';
 import './prisonbreak.css';
 import {useState} from 'react';
 import Table from 'react-bootstrap/Table';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
 import Login from './login';
 import ShowGameList from './showGameList';
 import ShowChat from './showChat';
 import Game from './game';
-import * as c from './constants';
 
 function App() {
   const [loggedIn, setLoggedIn] = useState(false);
@@ -14,8 +15,7 @@ function App() {
   const [inLobby, setInLobby] = useState(true);
   const [gamenumber, setGamenumber] = useState(-1);
   const [gamechatnumber, setGamechatnumber] = useState(-1);
-  const [participant, setParticipant] = useState(c.PARTY_TYPE_UNDETERMINED);
-  console.log(`Render App ${loggedIn}|${username}|${inLobby}|${gamenumber}|${gamechatnumber}|${participant}`);
+  console.log(`Render App ${loggedIn}|${username}|${inLobby}|${gamenumber}|${gamechatnumber}`);
   return (
     <div>
       <header  className="trBackground">
@@ -35,34 +35,27 @@ function App() {
               </thead>
               <tbody>
                   <tr>
-                      <td><ShowGameList username={username} setInLobby={setInLobby} setGamenumber={setGamenumber} setGamechatnumber={setGamechatnumber} setParticipant={setParticipant}/></td>
+                      <td><ShowGameList username={username} setInLobby={setInLobby} setGamenumber={setGamenumber} setGamechatnumber={setGamechatnumber}/></td>
                       <td><ShowChat chattype='PRISONBREAK' username={username}/></td>
                   </tr>
               </tbody>
             </Table>
           }
           {loggedIn && !inLobby &&
-            <Table>
-              <thead>
-                <tr className='trSubtitle'>
-                      <th>Game</th>
-                      <th>Chat</th>
-                  </tr>
-              </thead>
-              <tbody>
-                  <tr>
-                      <td>
-                        <Game
-                         participant={participant}
-                         gameid={gamenumber}
-                         nickname={username}
-                         setInLobby={setInLobby}
-                        />
-                      </td>
-                      <td><ShowChat chattype='GAMECHAT' chatnumber={gamechatnumber} username={username}/></td>
-                  </tr>
-              </tbody>
-            </Table>
+            <div>
+              <Row>
+                <Col xs={9}>
+                  <Game
+                    gameid={gamenumber}
+                    nickname={username}
+                    setInLobby={setInLobby}
+                  />
+                </Col>
+                <Col xs={3}>
+                  <ShowChat chattype='GAMECHAT' chatnumber={gamechatnumber} username={username}/>
+                </Col>
+              </Row>
+            </div>
           }
       </header>
     </div>

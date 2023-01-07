@@ -40,25 +40,17 @@ export async function callGetChat(chattype, chatnumber) {
     }
 }
 /**
- * Determine whether a word is in the slur-expunged ENABLE2K lexicon, case insensitive
- * @param {string} word A word
- * @returns Whether the word is in the lexicon
- * @async
- */
- export async function isWordValid(word) {
-    let url = `${baseurl}/ENABLE2K/exists?word=${word}`; // Server handles case insensitive logic
-    const response = await fetch(url);
-    const jdata = await response.json();
-    return jdata.value;
-}
-/**
  * Determine which words are invalid
  * @param {string[]} words A word array
+ * @param {bool} isJumbleMode True if word letters can be in any order
  * @returns {string[]} The words that are not in the slur-expunged ENABLE2K lexicon
  * @async
  */
- export async function determineInvalidWords(words) {
-    let url = `${baseurl}/ENABLE2K/getinvalidwords?words=${words}`; // Server handles case insensitive logic
+ export async function determineInvalidWords(words, isJumbleMode) {
+    let url = isJumbleMode ?
+        `${baseurl}/ENABLE2K/jumble/getinvalidwords?words=${words}` 
+    :
+        `${baseurl}/ENABLE2K/getinvalidwords?words=${words}`; // Server handles case insensitive logic
     const response = await fetch(url);
     const jdata = await response.json();
     return jdata.value;
@@ -123,11 +115,12 @@ export async function callMakeMove(number, isPass, isExchange, mainword, extrawo
  * Create new game
  * @param {string}  name Player name
  * @param {int} rackSize   Rack size
+ * @param {bool} isJumbleMode In jumble mode words can be played with letters in any order
  * @returns Game data or an error, json format
  * @async
  */
-export async function callCreateGame(name, rackSize) {
-    let url = `${baseurl}/pb/creategame?name=${name}&rackSize=${rackSize}`;
+export async function callCreateGame(name, rackSize, isJumbleMode) {
+    let url = `${baseurl}/pb/creategame?name=${name}&rackSize=${rackSize}&isJumbleMode=${isJumbleMode}`;
     try {
         const response = await fetch(url);
         const jdata = await response.json();
@@ -157,6 +150,26 @@ export async function callCreateGame(name, rackSize) {
         return {error: 'Problem with ' + url};
     }
 }
+
+/**
+ * Start game two
+ * @param {int} number The game number
+ * @returns Game data or an error, json format
+ * @async
+ */
+ export async function callStartGameTwo(number) {
+    let url =`${baseurl}/pb/startgametwo?number=${number}`;
+    try {
+        const response = await fetch(url);
+        const jdata = await response.json();
+        jdata.value.error = false;
+        return jdata.value;
+    } catch (error) {
+        console.log(error);
+        return {error: 'Problem with ' + url};
+    }
+}
+
 /**
  * Delete game
  * @param {int} number The game number

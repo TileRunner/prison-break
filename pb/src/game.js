@@ -8,19 +8,23 @@ import ShowRescues from './rescuesSection';
 import * as c from './constants';
 import { scrollToBottom } from "./scrollToBottom";
 import { usePrevious } from "./usePrevious";
-import { callGetGame, callMakeMove, determineInvalidWords } from "./callApi";
+import { callGetGame, callMakeMove, callStartGameTwo, determineInvalidWords } from "./callApi";
+import { Button } from "react-bootstrap";
 
 // eslint-disable-next-line
 const letterRegex = /^[A-Za-z]$/;
 // eslint-disable-next-line
 const lowerCaseLetterRegex = /^[a-z]$/;
 
-const Game = ({ participant // P=Prisoners, G=Guards
-    , gameid
+const Game = ({ gameid
     , nickname='' // Give it a default for Build
     , setInLobby // Support button to go back to lobby
     }) => {
     const [snats, setSnats] = useState(['Hello. This space is for debugging messages.']);
+    const [isJumbleMode, setIsJumbleMode] = useState(false); // Letters for a word can be placed in any order in jumble mode
+    const [isGameTwo, setIsGameTwo] = useState(false);
+    const [gameOneRescues, setGameOneRescues] = useState(0);
+    const [participant, setParticipant] = useState(c.PARTY_TYPE_UNDETERMINED); // Find out by matching nickname to game data
     const [racksize, setRacksize] = useState(4);
     const [middle, setMiddle] = useState(4); // Middle element in row or column array, fixed in initialize
     const [edge, setEdge] = useState(8); // Last element in row or column array, fixed in initialize
@@ -56,15 +60,19 @@ const Game = ({ participant // P=Prisoners, G=Guards
       async function firstcall() {
         let apireturn = await callGetGame(gameid);
         // first time only values:
+        setIsJumbleMode(apireturn.isJumbleMode);
+        setIsGameTwo(apireturn.isGameTwo);
+        if (nickname === apireturn.prisonersName) {
+          setParticipant(c.PARTY_TYPE_PRISONERS);
+          setOppname(apireturn.guardsName);
+        }
+        if (nickname === apireturn.guardsName) {
+          setParticipant(c.PARTY_TYPE_GUARDS);
+          setOppname(apireturn.prisonersName);
+        }
         setRacksize(apireturn.rackSize);
         setMiddle(apireturn.rackSize);
         setEdge(apireturn.rackSize * 2);
-        if (participant === c.PARTY_TYPE_PRISONERS) {
-          setOppname(apireturn.guardsName);
-        }
-        if (participant === c.PARTY_TYPE_GUARDS) {
-          setOppname(apireturn.prisonersName);
-        }
         // remaining values:
         let newWhoseturn = apireturn.finished ? c.WHOSE_TURN_GAMEOVER : apireturn.prisonersToMove ? c.PARTY_TYPE_PRISONERS : c.WHOSE_TURN_GUARDS;
         setWhoseturn(newWhoseturn);
@@ -76,7 +84,7 @@ const Game = ({ participant // P=Prisoners, G=Guards
         setSquareArray(apireturn.squares);
         }
     firstcall();
-    }, [gameid, participant]);
+    }, [gameid, nickname]);
     useEffect(() => {
       scrollToBottom("ScrollableMoves");
     },[moves])
@@ -175,6 +183,8 @@ const Game = ({ participant // P=Prisoners, G=Guards
         addSnat(apireturn.error);
         return false;
       }
+      setIsGameTwo(apireturn.isGameTwo);
+      setGameOneRescues(apireturn.gameOneRescues);
       let newWhoseturn = apireturn.finished ? c.WHOSE_TURN_GAMEOVER : apireturn.prisonersToMove ? c.PARTY_TYPE_PRISONERS : c.WHOSE_TURN_GUARDS;
       setWhoseturn(newWhoseturn);
       setPtiles(apireturn.prisonersRack);
@@ -183,8 +193,12 @@ const Game = ({ participant // P=Prisoners, G=Guards
       setMoves(apireturn.moves);
       setRescues(apireturn.rescues);
       setSquareArray(apireturn.squares);
-      if (!oppname && participant === c.PARTY_TYPE_PRISONERS) {
+      if (nickname === apireturn.prisonersName) {
+        setParticipant(c.PARTY_TYPE_PRISONERS);
         setOppname(apireturn.guardsName);
+      } else if (nickname === apireturn.guardsName) {
+        setParticipant(c.PARTY_TYPE_GUARDS);
+        setOppname(apireturn.prisonersName);
       }
       return true;
     }
@@ -401,7 +415,7 @@ const Game = ({ participant // P=Prisoners, G=Guards
       extrawords.forEach((ew) => {
         allwords = allwords + "," + ew;
       })
-      let invalidWords = determineInvalidWords(allwords);
+      let invalidWords = determineInvalidWords(allwords,isJumbleMode);
       return invalidWords;
     }
   
@@ -414,7 +428,14 @@ const Game = ({ participant // P=Prisoners, G=Guards
       let apireturn = await callGetGame(gameid);
       applyApireturn(apireturn);
     }
-  
+
+    async function goToGameTwo() {
+      let apireturn = await callStartGameTwo(gameid);
+      if (applyApireturn(apireturn)) {
+        putAtMoveStart();
+      }
+    }
+
     const placeTileOnBoard = (ri, ci, rackLetterOffset, newRcd, letter) => {
       let newSquareArray = JSON.parse(JSON.stringify(squareArray)); // Deep copy
       let newSquareArrayRow = [...newSquareArray[ri]]; // The row of squares they clicked on
@@ -543,26 +564,28 @@ const Game = ({ participant // P=Prisoners, G=Guards
       <div className="prisonbreak">
         <div className="w3-display-container w3-teal topBarHeight">
           <div className="w3-display-middle">
-            <h2>Prisoners land on <i className="material-icons pbSquareInner EscapeHatch">{c.PARTY_ICON_PRISONERS}</i> to escape</h2>
+            <h2>Prisoners land on <i className="material-icons pbSquareInner EscapeHatch">{c.PARTY_ICON_PRISONERS}</i> to escape
+            {isJumbleMode && <span> - Jumble Mode</span>}
+            </h2>
           </div>
           <div className="w3-display-topleft w3-black topBarCorner commonFontFamily">
-            Game id: {gameid}
+            Game id: {gameid} (game {isGameTwo ? 'two' : 'one'})
           </div>
           <div className="w3-display-topright w3-black topBarCorner commonFontFamily clickable" onClick={() => {setInLobby(true);}}>
-            Click here to return to lobby
+            Click here for lobby
           </div>
           <div className="w3-display-bottomleft w3-orange topBarCorner commonFontFamily">
             Prisoners: {
               participant === c.PARTY_TYPE_PRISONERS ? nickname
               : participant === c.PARTY_TYPE_GUARDS ? oppname
-              : 'Secret'
+              : 'Error'
               }
           </div>
           <div className="w3-display-bottomright w3-orange topBarCorner commonFontFamily">
             Guards: {
               participant === c.PARTY_TYPE_PRISONERS ? oppname
               : participant === c.PARTY_TYPE_GUARDS ? nickname
-              : 'Secret'
+              : 'Error'
               }
           </div>
         </div>
@@ -612,8 +635,10 @@ const Game = ({ participant // P=Prisoners, G=Guards
         </div>
         <div className="w3-display-container w3-teal topBarHeight">
           <div className="w3-display-middle commonFontFamily">
-            {whoseturn === c.WHOSE_TURN_GAMEOVER ?
-              <h1>Game Over!</h1>
+            {whoseturn === c.WHOSE_TURN_GAMEOVER && isGameTwo ?
+              <h1>Game Over! Escapes: {gameOneRescues} vs {rescues}</h1>
+            : whoseturn === c.WHOSE_TURN_GAMEOVER ?
+              <Button onClick={() => { goToGameTwo();}}>Click to go to Game Two</Button>
             :
               <p>{c.JOKE_ARRAY[jokeindex]}</p>
             }

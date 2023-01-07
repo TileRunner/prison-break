@@ -13,11 +13,11 @@ const ShowMoves = ({moves}) => { // show moves made
               :
               <span className={`pbMove ${m.isPass ? c.MOVE_TYPE_PASS : m.isExchange ? c.MOVE_TYPE_SWAP : c.MOVE_TYPE_PLAY}`}>
                 {!m.isPass && !m.isExchange ?
-                  <>{m.coords} {m.mainWord.replace("Q","Qu")}
+                  <>{m.coords} {m.mainWord}
                     {m.extraWords?.split(",").map((w, wi) => (
                       <span key={`extraword${wi}`}>
                         ,&nbsp;
-                        {w.replace("Q","Qu")}
+                        {w}
                       </span>
                     ))}
                   </>
