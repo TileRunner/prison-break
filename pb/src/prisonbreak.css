@@ -317,9 +317,6 @@
 .pbMove.SWAP {
     color: cyan;
 }
-.pbMove.SWAP::after {
-    content: "Swap tiles";
-}
 .pbMove.PASS {
     color: red;
 }

@@ -22,7 +22,7 @@ const ShowMoves = ({moves}) => { // show moves made
                     ))}
                   </>
                 :
-                  <></>
+                  <>{m.isExchange && <span>Swap {m.exchangeLetters.length} tiles</span>}</>
                 }
               </span>
             </div>

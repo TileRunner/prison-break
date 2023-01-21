@@ -10,6 +10,7 @@ import { scrollToBottom } from "./scrollToBottom";
 import { usePrevious } from "./usePrevious";
 import { callGetGame, callMakeMove, callStartGameTwo, determineInvalidWords } from "./callApi";
 import { Button } from "react-bootstrap";
+import ExchangeTiles from "./exchangeTiles";
 
 // eslint-disable-next-line
 const letterRegex = /^[A-Za-z]$/;
@@ -43,7 +44,8 @@ const Game = ({ gameid
     const prevRescues = usePrevious(rescues);
     const prevWhoseturn = usePrevious(whoseturn);
     const prevOppname = usePrevious(oppname);
-    console.log(`Render game ${participant}|${gameid}|${nickname}|${racksize}|${middle}|${edge}|${selection}|${whoseturn}|${rescues}|${oppname}`);
+    const [swappingTiles, setSwappingTiles] = useState(false);
+//    console.log(`Render game ${participant}|${gameid}|${nickname}|${racksize}|${middle}|${edge}|${selection}|${whoseturn}|${rescues}|${oppname}`);
 
     function addSnat(snat) {
       let newSnats = [...snats];
@@ -169,10 +171,10 @@ const Game = ({ gameid
       }
       let playinfo = await getPlayInfo();
       if (playinfo.invalidwords.length !== 0) {
-        alert(`Invalid according to ENABLE2K lexicon: ${playinfo.invalidwords.join().replace(".","?").toUpperCase()}`);
+        alert(`Invalid according to ENABLE2K lexicon: ${playinfo.invalidwords.join().toUpperCase()}`);
         return; // Do not apply the play
       }
-      let apireturn = await callMakeMove(gameid, false, false, playinfo.mainword, playinfo.extrawords, playinfo.pos, moves.length);
+      let apireturn = await callMakeMove(gameid, false, false, '', playinfo.mainword, playinfo.extrawords, playinfo.pos, moves.length);
       if (applyApireturn(apireturn)) {
         putAtMoveStart();
       }
@@ -208,8 +210,18 @@ const Game = ({ gameid
         window.alert("Need " + racksize + " tiles in the bag to exchange")
         return;
       }
-      let apireturn = await callMakeMove(gameid, false, true, '', '', '', moves.length);
+      setSwappingTiles(true);
+      //let apireturn = await callMakeMove(gameid, false, true, '', '', '', '', moves.length);
+      //applyApireturn(apireturn);
+    }
+    async function acceptTileSwap(swaptiles) {
+      alert(`Swapping tiles ${swaptiles}`);
+      setSwappingTiles(false);
+      let apireturn = await callMakeMove(gameid, false, true, swaptiles, '', '', '', moves.length);
       applyApireturn(apireturn);
+    }
+    function cancelTileSwap() {
+      setSwappingTiles(false);
     }
     
     function isPlayValid() {
@@ -420,7 +432,7 @@ const Game = ({ gameid
     }
   
     async function playerPassTurn() {
-      let apireturn = await callMakeMove(gameid, true, false, '', '', '', moves.length);
+      let apireturn = await callMakeMove(gameid, true, false, '', '', '', '', moves.length);
       applyApireturn(apireturn);
     }
 
@@ -609,6 +621,10 @@ const Game = ({ gameid
               participant={participant}
               moves={moves}
             />
+            {swappingTiles && <ExchangeTiles originalTiles={participant === c.PARTY_TYPE_PRISONERS ? ptiles : gtiles}
+             acceptSwapTiles={acceptTileSwap}
+             cancelSwapTiles={cancelTileSwap}
+             ></ExchangeTiles>}
           </div>
           <div className="col">
             {participant === whoseturn ?

@@ -60,13 +60,15 @@ export async function callGetChat(chattype, chatnumber) {
  * @param {int} number The game number
  * @param {bool} isPass Is it a pass?
  * @param {bool} isExchange Is it an exchange?
+ * @param {string} letters The letters to exchange if exchanging, blank to change all letters
  * @param {string} mainword The main word played, blanks as lower case letter otherwise upper case
  * @param {string} extrawords A comma separated list of extra words formed by the play
  * @param {string} coords The coords
+ * @param {int} syncCheck The number of moves made. Server checks this against what server has to avoid reprocessing a move.
  * @returns The updated game data or an error
  */
-export async function callMakeMove(number, isPass, isExchange, mainword, extrawords, coords, syncCheck) {
-    let url =`${baseurl}/pb/makemove?number=${number}&isPass=${isPass}&isExchange=${isExchange}&mainWord=${mainword}&extraWords=${extrawords}&coords=${coords}&syncCheck=${syncCheck}`;
+export async function callMakeMove(number, isPass, isExchange, letters, mainword, extrawords, coords, syncCheck) {
+    let url =`${baseurl}/pb/makemove?number=${number}&isPass=${isPass}&isExchange=${isExchange}&letters=${letters}&mainWord=${mainword}&extraWords=${extrawords}&coords=${coords}&syncCheck=${syncCheck}`;
     try {
         const response = await fetch(url);
         const jdata = await response.json();
