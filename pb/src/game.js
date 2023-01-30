@@ -215,7 +215,6 @@ const Game = ({ gameid
       //applyApireturn(apireturn);
     }
     async function acceptTileSwap(swaptiles) {
-      alert(`Swapping tiles ${swaptiles}`);
       setSwappingTiles(false);
       let apireturn = await callMakeMove(gameid, false, true, swaptiles, '', '', '', moves.length);
       applyApireturn(apireturn);
