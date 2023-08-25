@@ -43,14 +43,14 @@ export async function callGetChat(chattype, chatnumber) {
  * Determine which words are invalid
  * @param {string[]} words A word array
  * @param {bool} isJumbleMode True if word letters can be in any order
- * @returns {string[]} The words that are not in the slur-expunged ENABLE2K lexicon
+ * @returns {string[]} The words that are not in the lexicon
  * @async
  */
  export async function determineInvalidWords(words, isJumbleMode) {
     let url = isJumbleMode ?
-        `${baseurl}/ENABLE2K/jumble/getinvalidwords?words=${words}` 
+        `${baseurl}/NWL2020/jumble/getinvalidwords?words=${words}` 
     :
-        `${baseurl}/ENABLE2K/getinvalidwords?words=${words}`; // Server handles case insensitive logic
+        `${baseurl}/NWL2020/getinvalidwords?words=${words}`; // Server handles case insensitive logic
     const response = await fetch(url);
     const jdata = await response.json();
     return jdata.value;

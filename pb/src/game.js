@@ -171,7 +171,7 @@ const Game = ({ gameid
       }
       let playinfo = await getPlayInfo();
       if (playinfo.invalidwords.length !== 0) {
-        alert(`Invalid according to ENABLE2K lexicon: ${playinfo.invalidwords.join().toUpperCase()}`);
+        alert(`Invalid according to NWL20 lexicon: ${playinfo.invalidwords.join().toUpperCase()}`);
         return; // Do not apply the play
       }
       let apireturn = await callMakeMove(gameid, false, false, '', playinfo.mainword, playinfo.extrawords, playinfo.pos, moves.length);

@@ -41,6 +41,10 @@ function App() {
               </tbody>
             </Table>
           }
+          {inLobby && <div>
+            <a href="http://www.scrabbleplayers.org"><img border="0" src="http://www.scrabbleplayers.org/pix/logo-only-160px.png" alt="[NASPA Logo]"/></a>
+            <span className='ackNASPA'>NWL20 used with permission from NASPA</span>
+            </div>}
           {loggedIn && !inLobby &&
             <div>
               <Row>
