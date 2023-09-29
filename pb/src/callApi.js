@@ -48,9 +48,9 @@ export async function callGetChat(chattype, chatnumber) {
  */
  export async function determineInvalidWords(words, isJumbleMode) {
     let url = isJumbleMode ?
-        `${baseurl}/NWL2020/jumble/getinvalidwords?words=${words}` 
+        `${baseurl}/NWL2023/jumble/getinvalidwords?words=${words}` 
     :
-        `${baseurl}/NWL2020/getinvalidwords?words=${words}`; // Server handles case insensitive logic
+        `${baseurl}/NWL2023/getinvalidwords?words=${words}`; // Server handles case insensitive logic
     const response = await fetch(url);
     const jdata = await response.json();
     return jdata.value;
