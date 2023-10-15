@@ -96,7 +96,7 @@ const ShowGameList = ({username, setInLobby, setGamenumber, setGamechatnumber}) 
                         onClick={() => {joinGame(game.number);}}>
                             Join
                         </Button></Col>}
-                        { (game.finished && (username === game.prisonersName || username === game.guardsName)) &&
+                        { ((username === 'Tile Runner') || (game.finished && (username === game.prisonersName || username === game.guardsName))) &&
                         <Col><Button key={`deletebutton${game.number}`}
                         variant='danger'
                         onClick={() => {deleteGame(game.number);}}>
